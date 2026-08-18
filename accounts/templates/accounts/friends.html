@@ -1,0 +1,38 @@
+{% extends 'extended_play/base.html' %}
+
+{% block content %}
+    <div class="nav nav-tabs nav-fill mb-4">
+        <li class="nav-item">
+            <a href="{% url 'accounts:friends' %}" class="nav-link text-decoration-none link-body-emphasis active">Friends</a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'accounts:friend_requests' %}" class="nav-link text-decoration-none link-body-emphasis">Requests</a>
+        </li>
+    </div>
+    
+    <div class="section-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+        <h3 class="display-6 fw-normal mb-0">Friends:</h3>
+        <a href="{% url 'accounts:find_profile' %}" class="link-body-emphasis ms-auto mb-2 mb-md-0">Add a friend</a>
+    </div>
+
+    {% for friend in friends %}
+    <div class="friend-information card mb-3 custom-profile-body mt-1 border-0">
+        <div class="d-flex align-items-center position-relative flex-wrap flex-md-nowrap mt-1">
+            <div class=" flex-shrink-0 p-3" style="width: 100%; max-width: 150px; height: 100%; max-height: 150px;">   
+                {% if friend.profile.pfp %}
+                    <img src="{{ friend.profile.pfp.url }}" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                {% else %}
+                    <img src="/media/default_pfp.jpg" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                {% endif %}
+            </div>
+            <div class="card-body ms-2">
+                <h3 class="card-title display-3 fw-bold mb-0"><a href="{% url 'accounts:profile' friend.profile.user %}" class="text-decoration-none link-body-emphasis">{{ friend.profile.display_name }}</a></h3>
+                <p class="card-body fw-bold mt-1 mb-0 p-0 text-muted">{{ friend.profile.user }}</p>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+        <h3 class="mt-2">No Friends Yet</h3>
+    {% endfor %}
+{% endblock content %}

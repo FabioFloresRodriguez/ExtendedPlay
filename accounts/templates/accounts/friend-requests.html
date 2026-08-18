@@ -1,0 +1,66 @@
+{% extends 'extended_play/base.html' %}
+
+{% block content %}
+    <div class="nav nav-tabs nav-fill mb-4">
+        <li class="nav-item">
+            <a href="{% url 'accounts:friends' %}" class="nav-link text-decoration-none link-body-emphasis">Friends</a>
+        </li>
+
+        <li class="nav-item">
+            <a href="{% url 'accounts:friend_requests' %}" class="nav-link text-decoration-none link-body-emphasis active">Requests</a>
+        </li>
+    </div>
+
+    <div class="section-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+        <h3 class="display-6 fw-normal mb-0 me-auto">Requests:</h3>
+    </div>
+
+    {% for request in friend_requests %}
+    <div class="request-information card mb-3 custom-profile-body mt-1 border-0">
+        <div class="d-flex align-items-center position-relative flex-wrap flex-md-nowrap mt-1">
+                <div class="flex-shrink-0 p-3" style="width: 100%; max-width: 150px; height: 100%; max-height: 150px;">
+                    {% if request.from_user.profile.pfp %}
+                        <img src="{{ request.from_user.profile.pfp.url }}" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;"> 
+                    {% else %}
+                        <img src="/media/default_pfp.jpg" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                    {% endif %}
+                </div>
+                
+                <div class="card-body ms-2 d-flex align-items-center justify-content-center p-1">
+                    <div class="mb-0">
+                        <h3 class="card-title display-3 fw-bold mb-0"><a href="{% url 'accounts:profile' request.from_user.username %}" class="text-decoration-none link-body-emphasis">{{ request.from_user.profile.display_name }}</a></h3>
+                        <p class="card_body fw-bold mt-1 mb-0 p-0 text-muted">{{ request.from_user.profile.user }}</p>
+                    </div>
+                    
+                    <div class="ms-auto mb-2 mb-md-0">
+                        <div id="request-actions-{{ request.from_user.username }}">
+                            {% csrf_token %}
+                            <button
+                                hx-post="{% url 'accounts:accept_request' request.from_user.username %}"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                hx-vals='{
+                                    "name": "{{ request.from_user.username|escapejs }}"
+                                }'
+                                hx-target="#request-actions-{{ request.from_user.username }}"
+                                hx-swap="outerHTML"
+                                class="btn btn-success">Accept</button>
+                            
+                            {% csrf_token %}
+                            <button
+                                hx-post="{% url 'accounts:deny_request' request.from_user.username %}"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                hx-vals='{
+                                    "name": "{{ request.from_user.username|escapejs }}"
+                                }'
+                                hx-target="#request-actions-{{ request.from_user.username }}"
+                                hx-swap="outerHTML"
+                                class="btn btn-danger">Deny Request</button>
+                        </div>
+                    </div>
+                </div>
+        </div>
+    </div>
+    {% empty %}
+        <h4 class="mt-2">No New Requests</h4>
+    {% endfor %}
+{% endblock content %}

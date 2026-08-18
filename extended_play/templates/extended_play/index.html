@@ -1,0 +1,72 @@
+{% extends 'extended_play/base.html' %}
+
+{% block page_header %}
+    <div class="card text-bg-dark container mx-auto p-0 border-0 mb-3" style="min-height: 400px; max-height: 600px; height: 55vh;">
+        <img src="/media/home_page_background.jpg" class="card-img img-fluid w-100 h-100 object-fit-cover">
+
+        <div class="card-img-overlay d-flex flex-column align-items-center justify-content-center text-center p-4">
+            <h1 class="card-title display-2 fw-bold text-center mb-2">Welcome to Extended Play!</h1>
+            
+            <div class="d-none d-lg-block my-auto">
+                <p class="card-text display-5 fw-semibold text-center mb-1">Track and Review Albums</p>
+                <p class="card-text display-5 fw-semibold text-center mb-1">Share Your Recent Albums with Friends</p>
+                <p class="card-text display-5 fw-semibold text-center mb-1">Search an Album to Start</p>
+            </div>
+            
+
+            <a class="btn btn-custom mt-auto mb-1" href="{% url 'extended_play:search' %}">Search</a>           
+        </div>
+    </div>
+{% endblock page_header %}
+
+{% block content %}
+    {% if user.is_authenticated %}
+
+        <div class="fav-artists mt-3 mb-3">
+            <h3 class="border-bottom border-light display-6 fw-normal">Recent Albums From Your Favorite Artists:</h3>
+
+            <div class="row row-cols-4 row-cols-md-4 g-4 mt-1 mb-4">
+                {% if recent_albs %}
+                    {% for alb in recent_albs %}
+                        <div class="col mt-1">
+                            <div class="card">
+                                {% if alb.images %}
+                                    <img src="{{ alb.images.0.url }}" class="card-img-top" alt="{{ alb.name }} cover">
+                                {% endif %}
+                                <div class="card-body custom-body">
+                                    <h5 class="card-title fw-semibold"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:album' alb.id %}">{{ alb.name }}</a></h5>
+                                    <p class="card-text fw-normal"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:artist' alb.artists.0.id %}">{{ alb.artists.0.name }}</a></p>
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                {% else %}
+                    <h4>Follow more artists</h4>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="friend-albums mt-3 mb-3">
+            <h3 class="border-bottom border-light display-6 fw-normal">New From Friends:</h3>
+
+            <div class="row row-cols-4 row-cols-md-4 g-4 mt-1 mb-4">
+                {% if friend_recs %}
+                    {% for rec in friend_recs %}
+                        <div class="col mt-1">
+                            <div class="card">
+                                <img src="{{ rec.cover_url }}" class= "card-img-top">
+                                <div class="card-body custom-body">
+                                    <h5 class="card-title fw-semibold"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:album' rec.spotify_id %}">{{ rec.name }}</a></h5>
+                                    <p class="card-text fw-normal"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:artist' rec.artist_id %}">{{ rec.artist_name }}</a></p>
+                                </div>
+                            </div>
+                        </div>
+                        
+                    {% endfor %}
+                {% else %}
+                    <h4>None to display.</h4>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock content %}

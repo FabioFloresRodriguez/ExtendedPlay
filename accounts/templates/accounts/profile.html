@@ -1,0 +1,176 @@
+{% extends 'extended_play/base.html' %}
+
+{% block content %}
+    <div class="profile-information card mb-3 custom-profile-body">
+        <div class="d-flex align-items-center position-relative flex-wrap flex-md-nowrap">
+            <div class="flex-shrink-0 p-3" style="width: 100%; max-width: 300px; height: 100%; max-height: 300px;">
+                {% if user_obj.profile.pfp %}
+                    <img src="{{ user_obj.profile.pfp.url }}" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                {% else %}
+                    <img src="/media/default_pfp.jpg" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                {% endif %}
+            </div>
+
+            <div class="card-body ps-0 ps-md-0">
+                {% if user_obj.profile.user == request.user %}
+                    <a href="{% url 'accounts:edit_profile' %}" class="position-absolute top-0 end-0 m-3 link-body-emphasis fw-semibold">Edit Profile</a>
+                {% endif %}
+
+                <h1 class="card-title display-1 fw-bold  ms-1 mb-0">{{ user_obj.profile.display_name }}</h1>
+                <h3 class="card-text display-5 fw-semibold text-muted ms-1">{{ user_obj.profile.user.username }}</h3>
+
+                {% if user_obj.profile.user != request.user %}
+                    {% if is_friends %}
+                        {% csrf_token %}
+                        <button
+                            hx-post="{% url 'accounts:remove_friend' user_obj.profile.user.username %}"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            hx-vals='{
+                                "name": "{{ user_obj.profile.user.username|escapejs }}"
+                            }'
+                            hx-swap="outerHTML"
+                            class="btn btn-danger btn-responsive">Remove Friend</button>
+                    {% elif sent_request %}
+                        {% csrf_token %}
+                        <button
+                            hx-post="{% url 'accounts:cancel_request' user_obj.profile.user.username %}"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            hx-vals='{
+                                "name": "{{ user_obj.profile.user.username|escapejs }}"
+                            }'
+                            hx-swap="outerHTML"
+                            class="btn btn-danger btn-responsive">Cancel Request</button>
+
+                    {% elif received_request %}
+                        <!--Accept/deny request-->
+                        <div id="request-actions-{{ user_obj.profile.user.username }}">
+                            {% csrf_token %}
+                            <button
+                                hx-post="{% url 'accounts:accept_request' user_obj.profile.user.username %}"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                hx-vals='{
+                                    "name": "{{ user_obj.profile.user.username|escapejs }}"
+                                }'
+                                hx-target="#request-actions-{{ user_obj.profile.user.username }}"
+                                hx-swap="outerHTML"
+                                class="btn btn-success btn-responsive">Accept</button>
+                            
+                            {% csrf_token %}
+                            <button
+                                hx-post="{% url 'accounts:deny_request' user_obj.profile.user.username %}"
+                                hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                                hx-vals='{
+                                    "name": "{{ user_obj.profile.user.username|escapejs }}"
+                                }'
+                                hx-target="#request-actions-{{ user_obj.profile.user.username }}"
+                                hx-swap="outerHTML"
+                                class="btn btn-danger btn-responsive">Deny Request</button>
+                        </div>
+                            
+                    {% else %}
+                        {% csrf_token %}
+                        <button
+                            hx-post="{% url 'accounts:send_request' user_obj.profile.user.username %}"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            hx-vals='{
+                                "name": "{{ user_obj.profile.user.username|escapejs }}"
+                            }'
+                            hx-swap="outerHTML"
+                            class="btn btn-custom btn-custom">Send Friend Request</button>
+                    {% endif %} 
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    
+    <div class="followed-artists mt-4 mb-4">
+        <div class="log-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+            <h3 class="display-6 fw-normal mb-0 me-auto">Artists:</h3>
+            {% if username %}
+                <a href="{% url 'extended_play:followed_artists' username %}" class="link-body-emphasis ms-auto mb-0 mb-md-0">All artists</a>
+            {% else %}
+                <a href="{% url 'extended_play:followed_artists' %}" class="link-body-emphasis ms-auto mb-0 mb-md-0">All artists</a>
+            {% endif %}    
+        </div>
+        
+
+        <div class="row row-cols-4 row-cols-md-4 g-4 mt-1">
+            {% for artist in artists %}
+                <div class="col mt-1">
+                    <div class="card custom-artist-body">
+                        <div class="ratio ratio-1x1 mx-auto">
+                            {% if artist.pfp %}
+                                <img src="{{ artist.pfp }}" class="img-fluid rounded-circle h-100 w-100" alt="{{ artist.name }} profile picture">
+                            {% else %}
+                                <img src="/media/default_pfp.jpg" class="img-fluid rounded-circle h-100 w-100">
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body custom-body">
+                            <h5 class="card-title fw-semibold"><a href="{% url 'extended_play:artist' artist.spotify_id %}" class="text-decoration-none link-body-emphasis">{{ artist.name }}</a></h5>
+                        </div>
+                    </div>     
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="album-log mt-4 mb-4">
+        <div class="log-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+            <h3 class="display-6 fw-normal mb-0 me-auto">Album Log:</h3>
+            {% if username %}
+                <a href="{% url 'extended_play:album_log' username %}" class="link-body-emphasis ms-auto mb-0 mb-md-0">All albums</a>
+            {% else %}
+                <a href="{% url 'extended_play:album_log' %}" class="link-body-emphasis ms-auto mb-0 mb-md-0">All albums</a>
+            {% endif %}
+        </div>
+        
+
+        <div class="row row-cols-4 row-cols-md-4 g-4 mt-1">
+            {% for album in albums %}
+                <div class="col mt-1">
+                    <div class="card">
+                        <img src="{{ album.cover_url }}" class="card-img-top">
+
+                        <div class="card-body custom-body">
+                            <h5 class="card-title fw-semibold"><a href="{% url 'extended_play:album' album.spotify_id %}" class="text-decoration-none link-body-emphasis">{{ album.name }}</a></h5>
+                            <p class="card-text fw-normal"><a href="{% url 'extended_play:artist' album.artist_id %}" class="text-decoration-none link-body-emphasis">{{ album.artist_name }}</a></p>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {% if user_obj.profile.user == request.user %}
+        <div class="friends mt-4 mb-4">
+            <div class="log-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+                <h3 class="display-6 fw-normal mb-0 me-auto">Friends:</h3>
+                <a href="{% url 'accounts:friends' %}" class="link-body-emphasis ms-auto mb-0 mb-md-0">More</a>
+            </div>
+        
+            <div class="row row-cols-4 row-cols-md-4 g-4 mt-1">
+                {% for friend in friends %}
+                    <div class="col mt-1">
+                        <div class="card border-0">
+                            {% if friend.profile.pfp %}
+                                <a href="{% url 'accounts:profile' friend.profile.user %}"><img src="{{ friend.profile.pfp.url }}" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover"></a>
+                            {% else %}
+                                <a href="{% url 'accounts:profile' friend.profile.user %}"><img src="/media/default_pfp.jpg" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover"></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+    {% endif %}
+      
+    {% if user.is_authenticated and user_obj.profile.user == request.user %}
+        <hr />
+        <form action="{% url 'accounts:logout' %}" method="post">
+            {% csrf_token %}
+            <button name="submit" class="btn btn-custom">Log out</button>
+        </form>
+    {% endif %}
+{% endblock content %}
+

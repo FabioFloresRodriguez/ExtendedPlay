@@ -1,0 +1,35 @@
+{% extends "extended_play/base.html" %}
+
+{% block content %}
+    <div class="followed-artists mt-4 mb-4">
+        <div class="followed-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+            <h3 class="display-6 fw-normal mb-0 me-auto">Artists:</h3>
+            
+            {% if user_obj.profile.user == request.user %}
+                <a href="{% url 'extended_play:find_artist' %}" class="link-body-emphasis ms-auto mb-2 mb-md-0">Follow an artist</a>
+            {% endif %}
+        </div>
+        
+
+        <div class="row row-cols-4 row-cols-md-4 g-4 mt-1">
+            {% for artist in artists %}
+                <div class="col">
+                    <div class="card custom-artist-body">
+                        <div class="ratio ratio-1x1 mx-auto">
+                            {% if artist.pfp %}
+                                <img src="{{ artist.pfp }}" class="img-fluid rounded-circle h-100 w-100" alt="{{ artist.name }} profile picture">
+                            {% else %}
+                                <img src="/media/default_pfp.jpg" class="img-fluid rounded-circle h-100 w-100">
+                            {% endif %}
+                        </div>
+
+                        <div class="card-body custom-body">
+                            <h5 class="card-title fw-semibold"><a href="{% url 'extended_play:artist' artist.spotify_id %}" class="text-decoration-none link-body-emphasis">{{ artist.name }}</a></h5>
+                        </div>
+                    </div>     
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+{% endblock content %}

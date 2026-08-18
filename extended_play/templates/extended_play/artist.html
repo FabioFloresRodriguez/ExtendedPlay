@@ -1,0 +1,75 @@
+{% extends "extended_play/base.html" %}
+
+{% block content %}
+    <div class="artist-information card mb-3 custom-artist-body">
+        <div class="d-flex align-items-center position-relative flex-wrap flex-md-nowrap">
+            <div class="flex-shrink-0 p-3" style="width: 100%; max-width: 300px; height: 100%; max-height: 300px;">
+                {% if artist.pfp %}
+                    <img src="{{ artist.pfp }}" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                {% else %}
+                    <img src="/media/default_pfp.jpg" class="img-fluid rounded-circle w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                {% endif %}
+            </div>
+
+            <div class="card-body ms-2">
+                <h1 class="card-title display-1 fw-bold mb-0">{{ artist.name }}</h1>
+
+                {% if is_following %}
+                    {% csrf_token %}
+                    <button
+                        hx-post="{% url 'extended_play:unfollow_artist' %}"
+                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                        hx-vals='{
+                            "name": "{{ artist.name|escapejs }}",
+                            "spotify_id": "{{ artist.spotify_id }}",
+                            "pfp": "{{ artist.pfp }}"
+                        }'
+                        hx-swap="outerHTML"
+                        class="btn btn-secondary">Unfollow</button>
+                {% else %}
+                    {% csrf_token %}
+                    <button
+                        hx-post="{% url 'extended_play:follow_artist' %}"
+                        hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                        hx-vals='{
+                            "name": "{{ artist.name|escapejs }}",
+                            "spotify_id": "{{ artist.spotify_id }}",
+                            "pfp": "{{ artist.pfp }}"
+                        }'
+                        hx-swap="outerHTML"
+                        class="btn btn-custom">Follow</button>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="album-displays">
+        
+        <div class="artist-albums mt-3 mb-3">
+            <div class="section-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+                <h3 class="display-6 fw-normal  mb-0">Albums:</h3>
+                <a href="{% url 'extended_play:artist_albums' artist.spotify_id %}" class="link-body-emphasis ms-auto mb-2 mb-md-0">Show all</a>
+            </div>
+            
+
+            <div class="row row-cols-4 row-cols-md-4 g-4 mt-1">
+                {% for album in albums %}
+                    <div class="col mt-1">
+                        <div class="card">
+                            {% if album.images %}
+                                <img src="{{ album.images.0.url }}" class="card-img-top" alt="{{ album.name }} cover" width="100">
+                            {% endif %}
+                            <div class="card-body custom-body">
+                                <h5 class="card-title fw-semibold"><a href="{% url 'extended_play:album' album.id %}" class="text-decoration-none link-body-emphasis">{{ album.name }}</a></h5>
+                            </div>
+                        </div>
+                    </div>
+                    
+                {% empty %}
+                    No albums.
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+{% endblock content %}

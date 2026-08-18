@@ -1,0 +1,21 @@
+{% extends 'extended_play/base.html' %}
+
+{% block content %}
+    <h1 class="display-4 fw-bold mb-4">Edit Profile:</h1>
+    <form action="{% url 'accounts:edit_profile' %}" method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div class="mb-3">
+            <label for="input_name" class="form-label">Name</label>
+            <input type="text" class="form-control" id="input_name" name="display_name">
+        </div>
+
+        <div class="mb-3">
+            <label for="formFile" class="form-label">Profile Picture</label>
+            <input class="form-control" type="file" id="formFile" name="pfp">
+        </div>
+
+        <button type="submit" name="submit" class="btn btn-custom p-2">Save changes</button>
+        <button name="cancel" class="btn btn-custom p-2"><a href="{% url 'accounts:profile' %}" class="text-decoration-none link-body-emphasis">Cancel</a></button>
+    </form>
+{% endblock content %}

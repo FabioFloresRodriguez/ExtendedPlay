@@ -1,0 +1,108 @@
+{% extends "extended_play/base.html" %}
+
+{% block content %}
+    <div class="album card border-0">
+        <div class="album-information card mb-3 custom-artist-body">
+            <div class="d-flex align-items-center position-relative flex-wrap flex-md-nowrap">
+                <div class="flex-shrink-0 p-3" style="width: 100%; max-width: 300px; height: 100%; max-height: 300px;">
+                    {% if album.cover_url %}
+                        <img src="{{ album.cover_url }}" alt="{{ album.name }} Cover Art" class="img-fluid w-100" style="aspect-ratio: 1 / 1; object-fit: cover;">
+                    {% else %}
+                        <p>No cover available</p>
+                    {% endif %}
+                </div>
+
+                <div class="card-body ms-2">
+                    <h1 class="card-title display-1 fw-bold mb-0">{{ album.name }}</h1>
+                    <h3 class="card-text display-5 fw-semibold text-muted ms-1"><a href="{% url 'extended_play:artist' album.artist_id %}" class="text-decoration-none link-body-emphasis display-5 fw-semibold text-muted">{{ album.artist_name }}</a></h3>
+                
+                    {% if logged %}
+                        <button class="btn bt-secondary" disabled>Logged</button>
+                    {% else %}
+                        {% csrf_token %}
+                        <button 
+                            hx-post="{% url 'extended_play:add_album' %}"
+                            hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                            hx-vals='{
+                                "name": "{{ album.name|escapejs }}",
+                                "artist_name": "{{ album.artist_name }}",
+                                "artist_id": "{{ album.artist_id }}", 
+                                "spotify_id": "{{ album.spotify_id }}",
+                                "cover_url": "{{ album.cover_url }}" 
+                            }' 
+                            hx-swap="outerHTML"
+                            class="btn btn-custom">Add to album log</button>
+                    {% endif %}
+                </div>  
+            </div>
+        </div>
+
+        <div class="review card border-0">
+            {% if logged %}
+                {% if review %}
+                    <div class="section-header d-flex align-items-center justify-content-center ps-3 pe-3 border-0">
+                        <h3 class="display-6 fw-normal mb-0 me-auto">Review:</h3> 
+                        <p class="fw-normal mb-0 ms-auto"><a href="{% url 'extended_play:edit_review' album.spotify_id %}" class="link-body-emphasis ms-auto mb-0 mb-md-0">Edit review</a></p>
+                    </div>
+
+                    <hr class="border-light mx-3 my-2" style="opacity: 100%;">
+
+                    <div class="review-content ps-3 pe-3 border-0">
+                        <div class="m-2 d-flex align-items-center justify-content-center p-1">
+                            <div class="stars display-6 fw-normal mb-0 me-auto">
+                                {% with breakdown=review.get_star_breakdown %}
+                                    {% for i in breakdown.full %}
+                                        <i class="bi bi-star-fill "></i>
+                                    {% endfor %}
+
+                                    {% if breakdown.half %}
+                                        <i class="bi bi-star-half"></i>
+                                    {% endif %}
+                                    
+                                    {% for i in breakdown.empty %}
+                                        <i class="bi bi-star-empty"></i>
+                                    {% endfor %}
+                                {% endwith %}
+                            </div>
+
+                            <p class="fw-normal mb-0 ms-auto">Reviewed On: {{ review.date_added|date:'M d, Y' }}</p>
+                        </div>
+                        
+                        <div class="review-text m-2 fs-4">
+                            {% if review.text %}
+                                <p class="fw-normal">{{ review.text|linebreaks }}</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="section-header d-flex align-items-center justify-content-center ps-3 pe-3 border-0">
+                        <h3 class="display-6 fw-normal mb-0 me-auto">Review:</h3> 
+                        <p class="fw-normal mb-0 ms-auto"><a href="{% url 'extended_play:add_review' album.spotify_id %}" class="link-body-emphasis ms-auto mb-0 mb-md-0">Add Review</a></p>
+                    </div>
+
+                    <hr class="border-light mx-3 my-2" style="opacity: 100%;">
+
+                    <p class="fs-4 ps-3 pe-3">No review to display</p>
+                {% endif %}
+            {% endif %}
+        </div>
+
+        <div class="track-displays border-0">
+            <div class="section-header d-flex align-items-center justify-content-center ps-3 pe-3">
+                <h3 class="display-6 fw-normal mb-0 me-auto">Tracks:</h3> 
+            </div>
+
+            <hr class="border-light mx-3 my-2" style="opacity: 100%;">
+
+            <div class="track-display fs-2 me-auto">
+                <ol style="list-style-position: inside; font-variant-numeric: tabular-nums;">
+                    {% for track in album.tracklist %}
+                        <li>{{ track.name }}</li>
+                    {% empty %}
+                        <li>No tracks</li>
+                    {% endfor %}
+                </ol>
+            </div>
+        </div>
+    </div>
+{% endblock content %}

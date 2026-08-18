@@ -1,0 +1,124 @@
+:root, 
+[data-bs-theme="light"], 
+[data-bs-theme="dark"]
+{
+    /*Primary color */
+    --bs-primary : #3B1E54;
+    --bs-primary-rgb : 59, 30, 84;
+
+    /*Secondary color */
+    --bs-secondary : #9B7EBD;
+    --bs-secondary-rgb : 155, 126, 189;
+
+    /*Success/Accent color */
+    --bs-success : #D4BEE4;
+    --bs-success-rgb : 212, 190, 228;
+}
+
+[data-bs-theme="light"] {
+    --bs-body-bg : #EEEEEE;
+    --bs-body-bg-rgb : 238, 238, 238;
+    --bs-body-color : #212529
+}
+
+[data-bs-theme="dark"] {
+  --bs-body-bg : #343A40;
+  --bs-body-bg-rgb : 52, 58, 64;
+  --bs-body-color : #F8F9FA
+}
+
+.custom-body {
+    background-color: #564567;
+}
+
+.custom-artist-body {
+    background-color: #24282D;
+    border-color: #24282D;
+    color: #E9E9EA;
+}
+
+.custom-profile-body{
+    background-color: #635970;
+    border-color: #635970;
+    color: #E9E9EA;
+}
+
+.btn-custom {
+    background-color: #4F3C62;
+    border-color: #4F3C62;
+    color : #E9E6ED;
+}
+
+.btn-custom:hover,
+.btn-custom:focus {
+    background-color: #48325E;
+    border-color: #48325E;
+    color : #E9E6ED;
+}
+
+/* Small by default on mobile devices */
+.btn-responsive {
+  padding: 0.25rem 0.5rem;
+  font-size: 0.875rem;
+  border-radius: 0.25rem;
+}
+
+/* Scales up to a standard large button on desktops (md and up) */
+@media (min-width: 768px) {
+  .btn-responsive {
+    padding: 0.5rem 1rem;
+    font-size: 1.25rem;
+    border-radius: 0.3rem;
+  }
+}
+
+.star-rating {
+    display: inline-flex;
+    flex-direction: row-reverse;
+    cursor: pointer;
+}
+
+.star-rating input {
+    display: none;
+}
+
+/* Default state: Transparent fill with a white outline */
+.star-rating label {
+    color: transparent; /* Makes the inside of the unselected star invisible */
+    -webkit-text-stroke: 1.5px #ffffff; /* Creates the white border */
+    font-size: 24px;
+    padding: 0;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    
+    width: 12px; 
+    overflow: hidden; 
+}
+
+.star-rating label.left-half::before {
+    display: inline-block;
+    width: 24px; 
+}
+
+.star-rating label.right-half::before {
+    display: inline-block;
+    width: 24px;
+    margin-left: -12px; 
+}
+
+.star-rating label.left-half {
+    margin-left: 4px; 
+}
+
+/* Selected/Hover state: Solid white fill */
+.star-rating label:hover,
+.star-rating label:hover ~ label,
+.star-rating input:checked ~ label {
+    color: #ffffff; 
+    /* The white stroke blends perfectly into the white fill */
+}
+
+.form-control:focus {
+    border-color: #4F3C62;
+    box-shadow: 0 0 0 0.25rem rgba(79, 60, 98, 0.50);
+}

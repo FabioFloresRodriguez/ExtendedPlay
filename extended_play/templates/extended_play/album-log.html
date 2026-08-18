@@ -1,0 +1,36 @@
+{% extends "extended_play/base.html" %}
+
+{% block content %}
+    <div class="album-log mt-3 mb-3">
+        <div class="log-header border-bottom border-light d-flex align-items-center justify-content-center p-1">
+            <h3 class="display-6 fw-normal me-auto">Album Log:</h3>
+
+            {% if user_obj.profile.user == request.user %}
+                <a href="{% url 'extended_play:find_album' %}" class="link-body-emphasis ms-auto mb-2 mb-md-0">Add an album</a>
+            {% endif %}
+        </div>
+       
+        <div class="row row-cols-4 row-cols-md-4 g-4 mt-1">
+            {% for album in albums %}
+                <div class="col">
+                    <div class="card">
+                        <img src="{{ album.cover_url }}" class="card-img-top">
+
+                        <div class="card-body custom-body">
+                            <h5 class="card-title fw-semibold"><a href="{% url 'extended_play:album' album.spotify_id %}" class="text-decoration-none link-body-emphasis">{{ album.name }}</a></h5>
+                            <p class="card-text fw-normal"><a href="{% url 'extended_play:artist' album.artist_id %}" class="text-decoration-none link-body-emphasis">{{ album.artist_name }}</a></p>
+                        </div>
+                    </div>
+                </div>
+                
+            {% empty %}
+                No albums to display.
+            {% endfor %}
+        </div>
+    </div>
+    
+
+        
+
+    
+{% endblock content %}

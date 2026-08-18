@@ -1,0 +1,50 @@
+{% extends "extended_play/base.html" %}
+
+{% block content %}
+    <div class="artist-information">
+        <h1>
+            <a href="{% url 'extended_play:artist' artist_id %}" class="link-body-emphasis">{{ artist_name }}</a>
+        </h1>
+    </div>
+
+    <div class="album-displays mt-3 mb-3">
+        <h3 class="display-6 fw-normal">Albums:</h3>
+
+        <div class="row row-cols-4 row-cols-md-4 g-4">
+            {% for album in albums %}
+                <div class="col">
+                    <div class="card">
+                        {% if album.images %}
+                            <img src="{{ album.images.0.url }}" class="card-img-top" alt="{{ album.name }} cover" width="100">
+                        {% endif %}
+                        <div class="card-body custom-body">
+                            <h5 class="card-title fw-semibold"><a href="{% url 'extended_play:album' album.id %}" class="text-decoration-none link-body-emphasis">{{ album.name }}</a></h5>
+                        </div>
+                    </div>
+                </div>
+            {% empty %}
+                <h5>
+                    No albums to display.
+                </h5>
+            {% endfor %}
+        </div>
+        
+
+        <nav aria-label="Page navigation">
+            <ul class="pagination mt-2">
+                {% if has_back %}
+                    <li class="page-item"><a href="?offset={{ back_offset }}" class="btn btn-custom page-link text-decoration-none link-body-emphasis">Previous</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link">Previous</a></li>
+                {% endif %}
+
+                {% if has_next %}
+                    <li class="page-item"><a href="?offset={{ next_offset }}" class="btn btn-custom page-link text-decoration-none link-body-emphasis">Next</a></li>
+                {% else %}
+                    <li class="page-item disabled"><a class="page-link">Next</a></li>
+                {% endif %}
+            </ul>
+        </nav>    
+    </div>
+
+{% endblock content %}
