@@ -131,6 +131,8 @@ STATICFILES_DIRS = [
     BASE_DIR / "static",
 ]
 
+STATIC_ROOT = BASE_DIR / 'staticfiles'
+
 #My settings
 LOGIN_REDIRECT_URL = 'extended_play:index'
 LOGOUT_REDIRECT_URL = 'extended_play:index'
