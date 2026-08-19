@@ -2,9 +2,7 @@
 
 {% block page_header %}
     <div class="card text-bg-dark container mx-auto p-0 border-0 mb-3" style="min-height: 400px; max-height: 600px; height: 55vh;">
-        <img src="/media/home_page_background.jpg" class="card-img img-fluid w-100 h-100 object-fit-cover">
-
-        <div class="card-img-overlay d-flex flex-column align-items-center justify-content-center text-center p-4">
+        <div class="card-img-overlay d-flex flex-column align-items-center justify-content-center text-center custom-profile-body p-4">
             <h1 class="card-title display-2 fw-bold text-center mb-2">Welcome to Extended Play!</h1>
             
             <div class="d-none d-lg-block my-auto">
@@ -29,7 +27,10 @@
                 {% if recent_albs %}
                     {% for alb in recent_albs %}
                         <div class="col mt-1">
-                            <div class="card custom-profile-body border-0">
+                            <div class="card">
+                                {% if alb.images %}
+                                    <img src="{{ alb.images.0.url }}" class="card-img-top" alt="{{ alb.name }} cover">
+                                {% endif %}
                                 <div class="card-body custom-body">
                                     <h5 class="card-title fw-semibold"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:album' alb.id %}">{{ alb.name }}</a></h5>
                                     <p class="card-text fw-normal"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:artist' alb.artists.0.id %}">{{ alb.artists.0.name }}</a></p>
