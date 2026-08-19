@@ -29,10 +29,7 @@
                 {% if recent_albs %}
                     {% for alb in recent_albs %}
                         <div class="col mt-1">
-                            <div class="card">
-                                {% if alb.images %}
-                                    <img src="{{ alb.images.0.url }}" class="card-img-top" alt="{{ alb.name }} cover">
-                                {% endif %}
+                            <div class="card custom-profile-body border-0">
                                 <div class="card-body custom-body">
                                     <h5 class="card-title fw-semibold"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:album' alb.id %}">{{ alb.name }}</a></h5>
                                     <p class="card-text fw-normal"><a class="text-decoration-none link-body-emphasis" href="{% url 'extended_play:artist' alb.artists.0.id %}">{{ alb.artists.0.name }}</a></p>
