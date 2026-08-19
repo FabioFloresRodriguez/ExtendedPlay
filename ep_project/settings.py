@@ -11,7 +11,7 @@ https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
 from pathlib import Path
-import environ, os
+import environ, os, requests
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -32,6 +32,21 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
+try:
+    # First, get the security token
+    token_url = 'http://169.254.169.254/latest/api/token'
+    token_headers = {'X-aws-ec2-metadata-token-ttl-seconds': '21600'}
+    token = requests.put(token_url, headers=token_headers, timeout=0.1).text
+
+    # Next, use the token to get the IP
+    ip_url = 'http://169.254.169.254/latest/meta-data/local-ipv4'
+    ip_headers = {'X-aws-ec2-metadata-token': token}
+    ec2_private_ip = requests.get(ip_url, headers=ip_headers, timeout=0.1).text
+    
+    if ec2_private_ip:
+        ALLOWED_HOSTS.append(ec2_private_ip)
+except requests.exceptions.RequestException:
+    pass
 
 # Application definition
 
